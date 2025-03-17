@@ -9,11 +9,9 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
-    # Раскомментируйте следующие строки, если нужно связать с контейнером бэкенда
-    # networks:
-    #   - app-network
+    networks:
+      - app-network
     
-# Раскомментируйте, если ваш бэкенд находится в той же сети Docker
 networks:
   app-network:
     external: true

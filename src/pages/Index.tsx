@@ -13,9 +13,12 @@ const Index = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [websocketUrl, setWebsocketUrl] = useState<string>('');
   
-  // Формируем URL для WebSocket динамически на основе текущего хоста
+  // Формируем URL для WebSocket, используя порт 8080 для бэкенда
   useEffect(() => {
-    const dynamicWsUrl = `ws://${window.location.host}/ws?roomId=${roomId}`;
+    // Получаем хост без порта
+    const host = window.location.hostname;
+    // Формируем URL с явным указанием порта 8080
+    const dynamicWsUrl = `ws://${host}:8080/ws?roomId=${roomId}`;
     setWebsocketUrl(dynamicWsUrl);
   }, [roomId]);
   
