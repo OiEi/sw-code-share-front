@@ -1,9 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import SharedTextEditor from '@/components/SharedTextEditor';
+
+// Получаем URL WebSocket сервера из переменных окружения
+const defaultWsUrl = import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:8080/ws';
 
 const Index = () => {
   const [websocketUrl, setWebsocketUrl] = useState<string>('');
@@ -17,7 +19,7 @@ const Index = () => {
       setWebsocketUrl(savedUrl);
     } else {
       // Предложить значение по умолчанию, если нет сохраненного URL
-      setWebsocketUrl('ws://localhost:8080/ws');
+      setWebsocketUrl(defaultWsUrl);
     }
   }, []);
   

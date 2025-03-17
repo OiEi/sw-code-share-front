@@ -1,69 +1,66 @@
-# Welcome to your Lovable project
 
-## Project info
+# Rusky Lingo Buddy - Frontend
+
+Фронтенд-приложение для совместного редактирования текста в реальном времени.
+
+## URL проекта
 
 **URL**: https://lovable.dev/projects/024de2d4-2d13-41f8-b2bf-abdfb16df0d3
 
-## How can I edit this code?
+## Технологии
 
-There are several ways of editing your application.
+- React + TypeScript
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- WebSocket для коммуникации с бэкендом
 
-**Use Lovable**
+## Локальная разработка
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/024de2d4-2d13-41f8-b2bf-abdfb16df0d3) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Убедитесь, что у вас установлены Node.js и npm:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Клонируйте репозиторий
+git clone <URL_РЕПОЗИТОРИЯ>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Перейдите в директорию проекта
+cd <ИМЯ_ПРОЕКТА>
 
-# Step 3: Install the necessary dependencies.
+# Установите зависимости
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Запустите сервер для разработки
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Развертывание в Docker
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Предварительные требования
+- Docker
+- Docker Compose
 
-**Use GitHub Codespaces**
+### Шаги для развертывания
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Отредактируйте `.env.production` и укажите правильный URL вашего WebSocket сервера:
+   ```
+   VITE_WEBSOCKET_URL=ws://your-server-address:port/ws
+   ```
 
-## What technologies are used for this project?
+2. Соберите и запустите контейнер:
+   ```sh
+   docker-compose up -d
+   ```
 
-This project is built with .
+3. Приложение будет доступно на порту 80.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Интеграция с существующим бэкендом
 
-## How can I deploy this project?
+Если ваш бэкенд уже работает в Docker на том же сервере:
 
-Simply open [Lovable](https://lovable.dev/projects/024de2d4-2d13-41f8-b2bf-abdfb16df0d3) and click on Share -> Publish.
+1. Отредактируйте `docker-compose.yml` и раскомментируйте секции networks
+2. Укажите имя сети, в которой работает ваш бэкенд
+3. Убедитесь, что бэкенд доступен по указанному WebSocket URL
 
-## I want to use a custom domain - is that possible?
+## Конфигурация
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Настройки WebSocket-соединения можно изменить в файле `.env.production` перед сборкой или указать при запуске контейнера через переменные окружения.
