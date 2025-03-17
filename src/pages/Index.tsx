@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
 import SharedTextEditor from '@/components/SharedTextEditor';
 
 const Index = () => {
@@ -9,13 +10,49 @@ const Index = () => {
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   
+  // Попытаться загрузить последний использованный URL из localStorage
+  useEffect(() => {
+    const savedUrl = localStorage.getItem('lastWebsocketUrl');
+    if (savedUrl) {
+      setWebsocketUrl(savedUrl);
+    } else {
+      // Предложить значение по умолчанию, если нет сохраненного URL
+      setWebsocketUrl('ws://localhost:8080/ws');
+    }
+  }, []);
+  
   const handleConnect = () => {
-    if (!websocketUrl) return;
+    if (!websocketUrl) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, введите WebSocket URL",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsConnecting(true);
-    // После подключения меняем состояние
-    setIsConnected(true);
-    setIsConnecting(false);
+    
+    // Сохраняем URL в localStorage для будущего использования
+    localStorage.setItem('lastWebsocketUrl', websocketUrl);
+    
+    // Имитация проверки соединения (в реальности это будет делать useWebSocket)
+    setTimeout(() => {
+      setIsConnected(true);
+      setIsConnecting(false);
+      toast({
+        title: "Подключено",
+        description: `Успешное подключение к ${websocketUrl}`,
+      });
+    }, 1000);
+  };
+  
+  const handleDisconnect = () => {
+    setIsConnected(false);
+    toast({
+      title: "Отключено",
+      description: "Соединение закрыто",
+    });
   };
   
   return (
@@ -43,13 +80,13 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <div className="mb-6 flex justify-between items-center">
+          <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
             <div>
               <p className="text-sm text-gray-600">Подключено к: <span className="font-medium">{websocketUrl}</span></p>
             </div>
             <Button 
               variant="outline" 
-              onClick={() => setIsConnected(false)}
+              onClick={handleDisconnect}
             >
               Отключиться
             </Button>
