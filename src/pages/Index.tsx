@@ -1,52 +1,39 @@
+
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import SharedTextEditor from '@/components/SharedTextEditor';
-
-// Получаем URL WebSocket сервера из переменных окружения
-const defaultWsUrl = import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:8080/ws';
+import { useSearchParams } from 'react-router-dom';
 
 const Index = () => {
-  const [websocketUrl, setWebsocketUrl] = useState<string>('');
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [searchParams] = useSearchParams();
+  const roomId = searchParams.get('roomId') || '';
   
-  // Попытаться загрузить последний использованный URL из localStorage
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [websocketUrl, setWebsocketUrl] = useState<string>('');
+  
+  // Формируем URL для WebSocket динамически на основе текущего хоста
   useEffect(() => {
-    const savedUrl = localStorage.getItem('lastWebsocketUrl');
-    if (savedUrl) {
-      setWebsocketUrl(savedUrl);
-    } else {
-      // Предложить значение по умолчанию, если нет сохраненного URL
-      setWebsocketUrl(defaultWsUrl);
-    }
-  }, []);
+    const dynamicWsUrl = `ws://${window.location.host}/ws?roomId=${roomId}`;
+    setWebsocketUrl(dynamicWsUrl);
+  }, [roomId]);
   
   const handleConnect = () => {
     if (!websocketUrl) {
       toast({
         title: "Ошибка",
-        description: "Пожалуйста, введите WebSocket URL",
+        description: "Не удалось сформировать WebSocket URL",
         variant: "destructive"
       });
       return;
     }
     
-    setIsConnecting(true);
-    
-    // Сохраняем URL в localStorage для будущего использования
-    localStorage.setItem('lastWebsocketUrl', websocketUrl);
-    
-    // Имитация проверки соединения (в реальности это будет делать useWebSocket)
-    setTimeout(() => {
-      setIsConnected(true);
-      setIsConnecting(false);
-      toast({
-        title: "Подключено",
-        description: `Успешное подключение к ${websocketUrl}`,
-      });
-    }, 1000);
+    setIsConnected(true);
+    toast({
+      title: "Подключение",
+      description: `Подключение к комнате: ${roomId || 'общая комната'}`,
+    });
   };
   
   const handleDisconnect = () => {
@@ -64,27 +51,24 @@ const Index = () => {
         
         {!isConnected ? (
           <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold mb-4">Подключение к серверу</h2>
-            <div className="flex gap-3">
-              <Input
-                type="text"
-                value={websocketUrl}
-                onChange={(e) => setWebsocketUrl(e.target.value)}
-                placeholder="Введите WebSocket URL (например, ws://localhost:8080/ws)"
-                className="flex-1"
-              />
-              <Button 
-                onClick={handleConnect}
-                disabled={!websocketUrl || isConnecting}
-              >
-                {isConnecting ? 'Подключение...' : 'Подключиться'}
+            <h2 className="text-xl font-semibold mb-4">Подключение к комнате</h2>
+            
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">Комната: <span className="font-medium">{roomId || 'общая комната'}</span></p>
+              <p className="text-sm text-gray-600">WebSocket URL: <span className="font-medium">{websocketUrl}</span></p>
+            </div>
+            
+            <div className="flex justify-end">
+              <Button onClick={handleConnect}>
+                Подключиться
               </Button>
             </div>
           </div>
         ) : (
           <div className="mb-6 flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
             <div>
-              <p className="text-sm text-gray-600">Подключено к: <span className="font-medium">{websocketUrl}</span></p>
+              <p className="text-sm text-gray-600">Комната: <span className="font-medium">{roomId || 'общая комната'}</span></p>
+              <p className="text-sm text-gray-600">WebSocket URL: <span className="font-medium">{websocketUrl}</span></p>
             </div>
             <Button 
               variant="outline" 
@@ -96,7 +80,7 @@ const Index = () => {
         )}
         
         {isConnected && (
-          <SharedTextEditor websocketUrl={websocketUrl} />
+          <SharedTextEditor websocketUrl={websocketUrl} roomId={roomId} />
         )}
       </div>
     </div>

@@ -10,9 +10,10 @@ import { AlertCircle, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 
 interface SharedTextEditorProps {
   websocketUrl: string;
+  roomId?: string;
 }
 
-const SharedTextEditor: React.FC<SharedTextEditorProps> = ({ websocketUrl }) => {
+const SharedTextEditor: React.FC<SharedTextEditorProps> = ({ websocketUrl, roomId }) => {
   const { status, currentText, sendMessage, reconnect } = useWebSocket(websocketUrl);
   const [localText, setLocalText] = useState<string>('');
   const [isSending, setIsSending] = useState(false);
@@ -107,7 +108,10 @@ const SharedTextEditor: React.FC<SharedTextEditorProps> = ({ websocketUrl }) => 
   return (
     <Card className="w-full max-w-3xl mx-auto p-6">
       <div className="mb-4 flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Общий редактор текста</h2>
+        <h2 className="text-2xl font-bold">
+          Общий редактор текста
+          {roomId && <span className="ml-2 text-sm text-gray-500">(Комната: {roomId})</span>}
+        </h2>
         <div className="flex items-center gap-2">
           {renderStatusBadge()}
           {(status === 'error' || status === 'disconnected') && (
